@@ -74,6 +74,11 @@ namespace Dz6
                     Console.Write(Enemy.Symbol);
                     Console.ForegroundColor = ConsoleColor.White;
                     return;
+                case 3:
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.Write(Shild.Symbol);
+                    Console.ForegroundColor = ConsoleColor.White;
+                    return;
                 default:
                     Console.Write(" ");
                     return;
@@ -95,6 +100,7 @@ namespace Dz6
     {
         public static int Value { get { return value; } }
         private static int value = 2;
+        public bool isAlive = true;
         public int x = 0;
         public int y = 0;
         public static string Symbol { get { return symbol; } }
@@ -119,7 +125,7 @@ namespace Dz6
                         case 0:
                             if (x > 0)
                             {
-                                if (matrix[x - 1, y] == 0)
+                                if (matrix[x - 1, y] <= 1)
                                 {
                                     matrix[x - 1, y] = 2;
                                     matrix[x, y] = 0;
@@ -131,7 +137,7 @@ namespace Dz6
                         case 1:
                             if (x < matrix.GetLength(0) - 1 && !( x+1 == matrix.GetLength(0) - 1 && y == matrix.GetLength(1)-1))
                             {
-                                if (matrix[x + 1, y] == 0 )
+                                if (matrix[x + 1, y] <= 1)
                                 {
                                     matrix[x + 1, y] = 2;
                                     matrix[x, y] = 0;
@@ -143,7 +149,7 @@ namespace Dz6
                         case 2:
                             if (y > 0)
                             {
-                                if (matrix[x, y - 1] == 0)
+                                if (matrix[x, y - 1] <= 1)
                                 {
                                     matrix[x, y - 1] = 2;
                                     matrix[x, y] = 0;
@@ -155,7 +161,7 @@ namespace Dz6
                         case 3:
                             if (y < matrix.GetLength(1) - 1 && !(x == matrix.GetLength(0) - 1 && y + 1 == matrix.GetLength(1) - 1))
                             {
-                                if (matrix[x, y + 1] == 0)
+                                if (matrix[x, y + 1] <= 1)
                                 {
                                     matrix[x, y + 1] = 2;
                                     matrix[x, y] = 0;
@@ -212,6 +218,8 @@ namespace Dz6
         private static int value = 1;
         public int x = 0;
         public int y = 0;
+        public bool isAlive = true;
+        public int shild = 0;
         public static string Symbol { get { return symbol; } }
         private static string symbol = "☻";
         public int[,] Init(int[,] matrix)
@@ -225,28 +233,28 @@ namespace Dz6
             bool canMove = false;
             if (x - 1 >= 0)
             {
-                if (matrix[x - 1, y] == 0)
+                if (matrix[x - 1, y] == 0 || matrix[x - 1, y] == 3)
                 {
                     canMove = true;
                 }
             }
             if (x + 1 <= matrix.GetLength(0) - 1)
             {
-                if (matrix[x + 1, y] == 0)
+                if (matrix[x + 1, y] == 0 || matrix[x + 1, y] == 3)
                 {
                     canMove = true;
                 }
             }
             if (y - 1 >= 0)
             {
-                if (matrix[x, y - 1] == 0)
+                if (matrix[x, y - 1] == 0 || matrix[x , y-1] == 3)
                 {
                     canMove = true;
                 }
             }
-            if (y + 1 <= matrix.GetLength(1) - 1)
+            if (y + 1 <= matrix.GetLength(1) - 1 )
             {
-                if (matrix[x, y + 1] == 0)
+                if (matrix[x, y + 1] == 0|| matrix[x, y + 1] == 3)
                 {
                     canMove = true;
                 }
@@ -255,9 +263,13 @@ namespace Dz6
         }
         public int[,] Move(int[,] matrix, out ConsoleKeyInfo key)
         {
-            key = new ConsoleKeyInfo('a',ConsoleKey.A,false,false,false);
+            key = new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false);
             int way = 0;
             bool moveCheck = true;
+            if (matrix[x, y] != 1)
+            {
+                return matrix;
+            }
             if (this.CanMove(matrix))
             {
                 do
@@ -296,7 +308,7 @@ namespace Dz6
                         case 0:
                             if (x > 0)
                             {
-                                if (matrix[x - 1, y] == 0)
+                                if (matrix[x - 1, y] == 0 || matrix[x - 1, y] == Shild.Value)
                                 {
                                     matrix[x - 1, y] = 1;
                                     matrix[x, y] = 0;
@@ -308,7 +320,7 @@ namespace Dz6
                         case 1:
                             if (x < matrix.GetLength(0) - 1)
                             {
-                                if (matrix[x + 1, y] == 0)
+                                if (matrix[x + 1, y] == 0 || matrix[x + 1, y] == Shild.Value)
                                 {
                                     matrix[x + 1, y] = 1;
                                     matrix[x, y] = 0;
@@ -320,7 +332,7 @@ namespace Dz6
                         case 2:
                             if (y > 0)
                             {
-                                if (matrix[x, y - 1] == 0)
+                                if (matrix[x, y - 1] == 0 || matrix[x , y - 1 ] == Shild.Value)
                                 {
                                     matrix[x, y - 1] = 1;
                                     matrix[x, y] = 0;
@@ -332,7 +344,7 @@ namespace Dz6
                         case 3:
                             if (y < matrix.GetLength(1) - 1)
                             {
-                                if (matrix[x, y + 1] == 0)
+                                if (matrix[x, y + 1] == 0 || matrix[x, y + 1] == Shild.Value)
                                 {
                                     matrix[x, y + 1] = 1;
                                     matrix[x, y] = 0;
@@ -349,6 +361,47 @@ namespace Dz6
             }
             return matrix;
         }
+        public bool IsAliveCheck(int[,] matrix) 
+        {
+            if (matrix[x, y] == value)
+                return true;
+            else
+                return false;
+        }
+    }
+
+    class Shild 
+    {
+        public static string Symbol { get { return symbol; } }
+        private static string symbol = "♦";
+        public static int Value { get { return value; } }
+        private static int value = 3;
+        public int x = 0;
+        public int y = 0;
+        public bool isAlive = true;
+        public static int[,] Init(int[,] matrix, out int x, out int y) 
+        {
+            Random r = new Random();
+            bool initCheck = true;
+            do
+            {
+                x = r.Next(matrix.GetLength(0));
+                y = r.Next(matrix.GetLength(1));
+                if (matrix[x, y] == 0 && !(x == matrix.GetLength(0) - 1 && y == matrix.GetLength(1) - 1) && !(x == 0 && y == 0))
+                {
+                    matrix[x, y] = 3;
+                    initCheck = false;
+                }
+            }
+            while (initCheck);
+            return matrix;
+        }
+
+        public Shild(int x, int y)
+        {
+            this.x = x;
+            this.y = y;
+        }
     }
     class Program
     {
@@ -356,7 +409,8 @@ namespace Dz6
         {
             int lvl = 0;
             int n = 10;
-            int k = 7;
+            int k = 0;
+            int shildsCount = 3 ;
             bool checkMove;
             bool restart = true;
             ConsoleKeyInfo enterKey = new ConsoleKeyInfo('a',ConsoleKey.A,false,false,false);
@@ -375,6 +429,7 @@ namespace Dz6
                     k = k + 3;
                 }
 
+                Shild[] shilds = new Shild[shildsCount];
                 Enemy[] enemys = new Enemy[k];
                 Player player = new Player();
                 int[,] array = new int[n, n];
@@ -385,6 +440,11 @@ namespace Dz6
                 {
                     array = Game.Init(array, out int x, out int y);
                     enemys[i] = new Enemy(x, y);
+                }
+                for (int i = 0; i < shildsCount; i++)
+                {
+                    array = Shild.Init(array, out int x, out int y);
+                    shilds[i] = new Shild(x, y);
                 }
 
                 do
@@ -412,6 +472,10 @@ namespace Dz6
                     if (enterKey.Key == ConsoleKey.Escape)
                     {
                         checkMove = false;
+                        restart = false;
+                    }
+                    if (!player.IsAliveCheck(array)) 
+                    {
                         restart = false;
                     }
 
